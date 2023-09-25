@@ -9,6 +9,8 @@ setup() {
     # Docker Composeのインストール
     curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
+
+    docker-compose version
 }
 
 set -ex
@@ -26,6 +28,4 @@ EOS
 set -x
 
 # 起動
-echo 'beforeStartGame:'
 start_game
-echo 'afterStartGame:'
