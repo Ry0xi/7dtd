@@ -46,10 +46,26 @@ export class SdtdBaseStack extends cdk.Stack {
         );
 
         // IAM Policy
-        // const policy = new iam.ManagedPolicy(this, "EC2Policy", {
-        //     description: "",
-        //     statements: [],
-        // });
+        const policy = new iam.ManagedPolicy(this, "EC2Policy", {
+            description: "",
+            statements: [
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        "ec2:DescribeVolumes",
+                        "ec2:DescribeSnapshots",
+                        "ec2:DeleteSnapshot",
+                        "ec2:CreateSnapshot",
+                        "ec2:DetachVolume",
+                        "ec2:AttachVolume",
+                        "ec2:DeleteVolume",
+                        "ec2:CreateVolume",
+                        "ec2:CreateTags",
+                    ],
+                    resources: ["*"],
+                }),
+            ],
+        });
 
         // IAM Role
         const fleetSpotRole = new iam.Role(this, "spotfleetRole", {
@@ -66,7 +82,7 @@ export class SdtdBaseStack extends cdk.Stack {
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"),
                 iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ReadOnlyAccess"),
-                // policy,
+                policy,
             ],
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
             path: '/',

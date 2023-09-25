@@ -20,5 +20,6 @@ const baseStack = new SdtdBaseStack(app, 'SdtdBase', {
 const serverName = 'SdtdPVE01';
 new SdtdCdkStack(app, serverName, {
     env: env,
+    volumeSize: 20,
     base: baseStack.base,
 });

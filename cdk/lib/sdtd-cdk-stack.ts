@@ -4,6 +4,8 @@ import { Asset } from "aws-cdk-lib/aws-s3-assets";
 import { SdtdBase } from "./base-stack";
 
 export interface SdtdProps extends cdk.StackProps {
+  // EBSボリュームサイズ(GB)
+  volumeSize: number;
 	base: SdtdBase;
 }
 
@@ -17,7 +19,7 @@ export class SdtdCdkStack extends cdk.Stack {
     setupCommands.addCommands(
       `aws s3 cp s3://${asset.s3BucketName}/${asset.s3ObjectKey} /tmp/files.zip >> /var/tmp/setup`,
       `unzip -d /var/lib/ /tmp/files.zip >>/var/tmp/setup`,
-      `bash /var/lib/scripts/user-data.sh`
+      `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize}`
     );
 
     const multipartUserData = new ec2.MultipartUserData();
