@@ -7,7 +7,43 @@
 - [x] CDKを使って構築する
 - [ ] 2023年9月29日金曜日までにマルチプレイができるようにする
 - [ ] Discordのコマンドで起動制御できる
-- [ ] EC2 Spot Fleetを利用してコストを月1000円以内に抑える
+- [ ] EC2 Spot Fleetを利用する
+- [ ] コストを月1000円以内に抑える
+
+## 開発環境
+
+### ディレクトリ構造
+- cdk: CDK関連
+  - bin/cdk.ts: CDKのメイン
+  - lib/*-stack.ts: スタックの設定
+- files: EC2上で利用するスクリプトなど
+- functions: Lambda関連
+
+### CDKのデプロイ
+
+```sh
+cdk deploy --all
+```
+
+### サーバーの起動・停止
+- EC2 Spot FleetでEC2インスタンスの条件を指定
+- Spot Fleetのターゲットキャパシティを増減させることによってサーバーの起動停止を行う
+
+#### CLIでサーバーの起動・停止
+
+https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/work-with-spot-fleets.html#modify-spot-fleet
+
+起動
+
+```sh
+aws ec2 modify-spot-fleet-request --spot-fleet-request-id sfr-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --target-capacity 1
+```
+
+停止
+
+```sh
+aws ec2 modify-spot-fleet-request --spot-fleet-request-id sfr-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --target-capacity 0
+```
 
 ## memo
 
