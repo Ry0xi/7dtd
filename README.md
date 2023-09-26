@@ -33,9 +33,10 @@ bun run hoge
 ```
 
 ### ディレクトリ構造
+
 - cdk: CDK関連
   - bin/cdk.ts: CDKのメイン
-  - lib/*-stack.ts: スタックの設定
+  - lib/\*-stack.ts: スタックの設定
 - files: EC2上で利用するスクリプトなど
 - functions: Lambda関連
 
@@ -46,6 +47,7 @@ cdk deploy --all
 ```
 
 ### サーバーの起動・停止
+
 - EC2 Spot FleetでEC2インスタンスの条件を指定
 - Spot Fleetのターゲットキャパシティを増減させることによってサーバーの起動停止を行う
 
@@ -68,9 +70,11 @@ aws ec2 modify-spot-fleet-request --spot-fleet-request-id sfr-xxxxxxxx-xxxx-xxxx
 ## memo
 
 ### 7dtd GameServerの参考
+
 - https://zenn.dev/masahide/articles/ec694906c0c5cd
 
 ### Discord Botの参考
+
 - https://note.sarisia.cc/entry/discord-slash-commands/
 - https://github.com/masahide/spot-fleet-7dtd/blob/main/functions/discordbot/main.go
 

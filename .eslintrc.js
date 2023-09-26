@@ -6,8 +6,17 @@ const config = {
         tsconfigRootDir: __dirname,
         sourceType: 'module',
     },
-    plugins: ['@typescript-eslint/eslint-plugin', 'jest', 'unused-imports', 'import', 'no-relative-import-paths'],
-    extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+    plugins: [
+        '@typescript-eslint/eslint-plugin',
+        'jest',
+        'unused-imports',
+        'import',
+        'no-relative-import-paths',
+    ],
+    extends: [
+        'plugin:@typescript-eslint/recommended',
+        'plugin:prettier/recommended',
+    ],
     root: true,
     env: {
         node: true,
@@ -57,7 +66,12 @@ const config = {
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
             'warn',
-            { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
+            {
+                vars: 'all',
+                varsIgnorePattern: '^_',
+                args: 'after-used',
+                argsIgnorePattern: '^_',
+            },
         ],
         'import/order': [
             'warn',

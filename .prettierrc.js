@@ -3,10 +3,10 @@ module.exports = {
     trailingComma: 'all',
     overrides: [
         {
-            files: "*.md",
+            files: '*.md',
             options: {
-                tabWidth: 2
-            }
-        }
-    ]
+                tabWidth: 2,
+            },
+        },
+    ],
 };

@@ -1,10 +1,6 @@
-import * as cdk from "aws-cdk-lib";
-import {
-    aws_iam as iam,
-    aws_ec2 as ec2,
-    StackProps,
-  } from "aws-cdk-lib";
-import { Construct } from "constructs";
+import * as cdk from 'aws-cdk-lib';
+import { aws_iam as iam, aws_ec2 as ec2, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 
 export interface SdtdBaseProps extends StackProps {
     myIP: string;
@@ -46,42 +42,46 @@ export class SdtdBaseStack extends cdk.Stack {
         );
 
         // IAM Policy
-        const policy = new iam.ManagedPolicy(this, "EC2Policy", {
-            description: "",
+        const policy = new iam.ManagedPolicy(this, 'EC2Policy', {
+            description: '',
             statements: [
                 new iam.PolicyStatement({
                     effect: iam.Effect.ALLOW,
                     actions: [
-                        "ec2:DescribeVolumes",
-                        "ec2:DescribeSnapshots",
-                        "ec2:DeleteSnapshot",
-                        "ec2:CreateSnapshot",
-                        "ec2:DetachVolume",
-                        "ec2:AttachVolume",
-                        "ec2:DeleteVolume",
-                        "ec2:CreateVolume",
-                        "ec2:CreateTags",
+                        'ec2:DescribeVolumes',
+                        'ec2:DescribeSnapshots',
+                        'ec2:DeleteSnapshot',
+                        'ec2:CreateSnapshot',
+                        'ec2:DetachVolume',
+                        'ec2:AttachVolume',
+                        'ec2:DeleteVolume',
+                        'ec2:CreateVolume',
+                        'ec2:CreateTags',
                     ],
-                    resources: ["*"],
+                    resources: ['*'],
                 }),
             ],
         });
 
         // IAM Role
-        const fleetSpotRole = new iam.Role(this, "spotfleetRole", {
+        const fleetSpotRole = new iam.Role(this, 'spotfleetRole', {
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName(
-                    "service-role/AmazonEC2SpotFleetTaggingRole"
+                    'service-role/AmazonEC2SpotFleetTaggingRole',
                 ),
             ],
-            assumedBy: new iam.ServicePrincipal("spotfleet.amazonaws.com"),
+            assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
             path: '/',
         });
 
         const ec2Role = new iam.Role(this, 'EC2Role', {
             managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"),
-                iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ReadOnlyAccess"),
+                iam.ManagedPolicy.fromAwsManagedPolicyName(
+                    'AmazonS3FullAccess',
+                ),
+                iam.ManagedPolicy.fromAwsManagedPolicyName(
+                    'AmazonEC2ReadOnlyAccess',
+                ),
                 policy,
             ],
             assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
