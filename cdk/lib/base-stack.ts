@@ -84,6 +84,15 @@ export class SdtdBaseStack extends cdk.Stack {
                         `arn:aws:ssm:*:*:parameter/${props.prefix}/*`,
                     ],
                 }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['ec2:ModifySpotFleetRequest'],
+                    resources: [
+                        'arn:aws:ec2:*:*:launch-template/*',
+                        'arn:aws:ec2:*:*:spot-fleet-request/*',
+                        'arn:aws:ec2:*:*:subnet/*',
+                    ],
+                }),
             ],
         });
 
