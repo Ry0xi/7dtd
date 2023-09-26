@@ -16,6 +16,22 @@
 
 ## 開発環境
 
+### Prerequisite
+
+#### Bun
+
+```sh
+curl -fsSL https://bun.sh/install | bash
+```
+
+```sh
+bun install
+```
+
+```sh
+bun run hoge
+```
+
 ### ディレクトリ構造
 - cdk: CDK関連
   - bin/cdk.ts: CDKのメイン
