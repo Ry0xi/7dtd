@@ -46,6 +46,8 @@ EOS
 
 set -ex
 
+/var/lib/scripts/send_ip.sh
+
 mount_latest >> /var/tmp/userdata_mount.log 2>&1
 
 mv /mnt/game/log/console/sdtdserver-console.log /mnt/game/log/console/sdtdserver-console.log.old

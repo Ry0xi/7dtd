@@ -67,3 +67,9 @@ cat /mnt/game/log/console/sdtdserver-console.log | grep "GameServer.Init success
 ```sh
 vi /tmp/players
 ```
+
+# Spotインスタンス停止アクションの確認
+
+```sh
+tail -f /var/tmp/log
+```
