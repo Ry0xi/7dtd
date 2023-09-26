@@ -2,7 +2,7 @@
 
 setup() {
     yum update -y
-    yum install -y docker jq
+    yum install -y docker jq expect telnet
     service docker start
     usermod -a -G docker ec2-user
 
@@ -48,5 +48,6 @@ set -ex
 
 mount_latest >> /var/tmp/userdata_mount.log 2>&1
 
+/var/lib/scripts/down_cron.sh &
 # 起動
 start_game

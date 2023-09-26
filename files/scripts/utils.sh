@@ -46,6 +46,21 @@ _create_new_volume() {
     mount /dev/sdf /mnt
 }
 
+# Delete old ones, leaving $SNAPSHOTGEN generations
+_delete_old_snapshot() {
+	snapshots=$(aws ec2 describe-snapshots --owner-ids self \
+		--query 'Snapshots[?(Tags[?Key==`'"$SERVERNAME"'`].Value)]')
+	rmsids=$(echo "$snapshots" | jq 'sort_by(.StartTime)|.[:-'"$SNAPSHOTGEN"']|.[].SnapshotId' -r)
+	for sid in $rmsids; do
+		aws ec2 delete-snapshot --snapshot-id "$sid"
+	done
+}
+
+get_ssm_value() {
+	SSMPATH=/${PREFIX}/${SERVERNAME}
+	aws ssm get-parameter --name "${SSMPATH}/${1}" --with-decryption | jq .Parameter.Value -r
+}
+
 mount_latest() {
 	snapshot=$(_get_snapshot)
 	case "$snapshot" in
@@ -58,6 +73,33 @@ mount_latest() {
 	esac
 }
 
+# マウントを解除し、スナップショットを作成、ボリュームを削除する
+create_snapshot() {
+	vid=$(cat /var/tmp/aws_vid)
+	## マウント解除
+	umount -f /mnt
+	aws ec2 detach-volume --volume-id "$vid"
+
+	## スナップショット作成
+	time=$(date "+%Y%m%d-%H%M%S")
+	aws ec2 create-snapshot --volume-id "$vid" \
+		--description "$SERVERNAME backup $time" \
+		--tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value='"${SERVERNAME}"-"${time}"'},{Key='"$SERVERNAME"',Value=true}]'
+
+	sleep 2
+
+	## ボリューム削除
+	aws ec2 wait volume-available --volume-ids "$vid"
+	aws ec2 delete-volume --volume-id "$vid"
+	_delete_old_snapshot
+}
+
+stop_server() {
+    [[ -z $PREFIX ]] && return
+	sfrid=$(get_ssm_value sfrID)
+	aws ec2 modify-spot-fleet-request --spot-fleet-request-id "$sfrid" --target-capacity 0
+}
+
 start_game() {
     docker-compose -f /var/lib/config/compose.yaml up -d
     echo 'game started.'
@@ -65,4 +107,12 @@ start_game() {
 
 stop_game() {
     docker-compose -f /var/lib/config/compose.yaml down
+}
+
+stop_backup_shutdown() {
+	stop_game
+	sleep 3
+	create_snapshot
+	sleep 3
+	stop_server
 }
