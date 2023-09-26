@@ -86,7 +86,7 @@ export class SdtdCdkStack extends cdk.Stack {
             param: new ssm.StringParameter(this, kv.key, {
                 allowedPattern: '.*',
                 description: `${kv.key}`,
-                parameterName: `/${this.stackName}/${kv.key}`,
+                parameterName: `/${props.prefix}/${this.stackName}/${kv.key}`,
                 stringValue: kv.value,
                 tier: ssm.ParameterTier.STANDARD,
             }),
