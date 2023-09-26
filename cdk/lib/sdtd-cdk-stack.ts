@@ -1,12 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 import type { SdtdBase } from '@/cdk/lib/base-stack';
 
 export interface SdtdProps extends cdk.StackProps {
+    prefix: string;
     // EBSボリュームサイズ(GB)
     volumeSize: number;
+    snapshotGen: number;
     base: SdtdBase;
 }
 
@@ -20,7 +23,7 @@ export class SdtdCdkStack extends cdk.Stack {
         setupCommands.addCommands(
             `aws s3 cp s3://${asset.s3BucketName}/${asset.s3ObjectKey} /tmp/files.zip >> /var/tmp/setup`,
             `unzip -d /var/lib/ /tmp/files.zip >>/var/tmp/setup`,
-            `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize}`,
+            `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize} ${props.prefix} ${props.snapshotGen}`,
         );
 
         const multipartUserData = new ec2.MultipartUserData();
@@ -38,7 +41,7 @@ export class SdtdCdkStack extends cdk.Stack {
             role: props.base.ec2role,
         });
 
-        new ec2.CfnSpotFleet(this, 'SpotFleet', {
+        const cfnSpotFleet = new ec2.CfnSpotFleet(this, 'SpotFleet', {
             spotFleetRequestConfigData: {
                 iamFleetRole: props.base.fleetSpotRoleArn,
                 allocationStrategy: 'lowestPrice',
@@ -72,5 +75,27 @@ export class SdtdCdkStack extends cdk.Stack {
                 ],
             },
         });
+
+        const params = [
+            { key: 'sfrID', value: cfnSpotFleet.attrId },
+            { key: 'volumeSize', value: `${props.volumeSize}` },
+            { key: 'snapshotGen', value: `${props.snapshotGen}` },
+        ].map((kv) => ({
+            kv: kv,
+            param: new ssm.StringParameter(this, kv.key, {
+                allowedPattern: '.*',
+                description: `${kv.key}`,
+                parameterName: `/${this.stackName}/${kv.key}`,
+                stringValue: kv.value,
+                tier: ssm.ParameterTier.STANDARD,
+            }),
+        }));
+
+        params.map(
+            (param) =>
+                new cdk.CfnOutput(this, `Key${param.kv.key}`, {
+                    value: param.param.stringValue,
+                }),
+        );
     }
 }

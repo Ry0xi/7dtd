@@ -4,6 +4,7 @@ import { aws_iam as iam, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 export interface SdtdBaseProps extends StackProps {
+    prefix: string;
     myIP: string;
 }
 
@@ -60,6 +61,19 @@ export class SdtdBaseStack extends cdk.Stack {
                         'ec2:CreateTags',
                     ],
                     resources: ['*'],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        'kms:Decrypt',
+                        'ssm:GetParametersByPath',
+                        'ssm:GetParameters',
+                        'ssm:GetParameter',
+                    ],
+                    resources: [
+                        'arn:aws:kms:*:*:key/CMK',
+                        `arn:aws:ssm:*:*:parameter/${props.prefix}/*`,
+                    ],
                 }),
             ],
         });
