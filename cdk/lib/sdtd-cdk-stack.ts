@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 import type { SdtdBase } from '@/cdk/lib/base-stack';
 
