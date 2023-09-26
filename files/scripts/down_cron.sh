@@ -2,7 +2,7 @@
 
 # STARTWAIT=1800
 # WAIT=300
-STARTWAIT=600
+STARTWAIT=1800
 WAIT=60
 
 # shellcheck disable=SC1091
@@ -19,7 +19,7 @@ SCRIPT_DIR=$(
 FILE=/tmp/players
 
 players() {
-	"${SCRIPT_DIR}"/expect/list_player.sh > $FILE
+	"${SCRIPT_DIR}"/expect/list_players.sh > $FILE
 	user=$(cat $FILE | grep "in the game" | grep -Eo "[0-9]{1,4}")
 	[[ $user == "" ]] && user=99
 	echo $user
