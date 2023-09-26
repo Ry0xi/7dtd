@@ -24,7 +24,7 @@ _mount_snapshot() {
 	vid=$(echo "$volume" | jq -r '.VolumeId')
 	echo "$vid" >/var/tmp/aws_vid
 	echo volumeID: "$vid"
-    
+
 	aws ec2 wait volume-available --volume-ids "$vid"
 	aws ec2 attach-volume --volume-id "$vid" --instance-id "$INSTANCEID" --device /dev/sdf
 	sleep 5
@@ -117,4 +117,8 @@ stop_backup_shutdown() {
 	create_snapshot
 	sleep 3
 	stop_server
+}
+
+output_log() {
+    echo "$1" >> /var/tmp/log
 }
