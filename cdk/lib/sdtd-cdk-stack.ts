@@ -23,6 +23,7 @@ export class SdtdCdkStack extends cdk.Stack {
         setupCommands.addCommands(
             `aws s3 cp s3://${asset.s3BucketName}/${asset.s3ObjectKey} /tmp/files.zip >> /var/tmp/setup`,
             `unzip -d /var/lib/ /tmp/files.zip >>/var/tmp/setup`,
+            'chmod -R +x /var/lib',
             `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize} ${props.prefix} ${props.snapshotGen}`,
         );
 

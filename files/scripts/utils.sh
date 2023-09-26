@@ -15,6 +15,7 @@ _get_snapshot() {
 # スナップショットをインスタンスにマウントする
 _mount_snapshot() {
 	snapshot=$1
+    aws ec2 wait snapshot-completed --snapshot-ids "$snapshot"
 	time=$(date "+%Y%m%d-%H%M%S")
 	volume=$(aws ec2 create-volume --volume-type gp3 \
 		--availability-zone "$AZ" \
@@ -23,6 +24,7 @@ _mount_snapshot() {
 	vid=$(echo "$volume" | jq -r '.VolumeId')
 	echo "$vid" >/var/tmp/aws_vid
 	echo volumeID: "$vid"
+    
 	aws ec2 wait volume-available --volume-ids "$vid"
 	aws ec2 attach-volume --volume-id "$vid" --instance-id "$INSTANCEID" --device /dev/sdf
 	sleep 5
