@@ -11,10 +11,10 @@
     "cdk": "cdk",
     "check": "bun run check:prettier && bun run check:eslint",
     "check:prettier": "prettier -c .",
-    "check:eslint": "eslint --ext .ts --max-warnings 0",
+    "check:eslint": "eslint . --ext .ts --max-warnings 0",
     "fix": "bun run fix:prettier && bun run fix:eslint",
     "fix:prettier": "prettier --write .",
-    "fix:eslint": "eslint --ext .ts --fix"
+    "fix:eslint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
@@ -25,6 +25,8 @@
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jest": "^27.4.0",
     "eslint-plugin-no-relative-import-paths": "^1.5.2",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",

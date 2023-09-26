@@ -22,7 +22,13 @@ const config = {
         node: true,
         jest: true,
     },
-    ignorePatterns: ['.eslintrc.js'],
+    ignorePatterns: [
+        'node_modules',
+        '.eslintrc.js',
+        'dist',
+        'cdk.out',
+        '.cdk.staging',
+    ],
     rules: {
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',
@@ -99,7 +105,6 @@ const config = {
             'warn',
             {
                 allowSameFolder: false,
-                rootDir: 'src',
                 prefix: '@',
             },
         ],

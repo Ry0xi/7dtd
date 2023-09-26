@@ -32,6 +32,22 @@ bun install
 bun run hoge
 ```
 
+### コードフォーマット
+
+コードの修正
+
+```sh
+bun run fix
+```
+
+コードの確認のみ
+
+```sh
+bun run check
+```
+
+[SHOULD] エディターの保存時の設定でPrettierとESLintを実行するのを推奨します。
+
 ### ディレクトリ構造
 
 - cdk: CDK関連
