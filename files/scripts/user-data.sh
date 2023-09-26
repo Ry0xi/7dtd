@@ -44,7 +44,7 @@ EOS
 # shellcheck disable=SC1091
 . /var/lib/scripts/utils.sh
 
-set -ex
+set -x
 
 /var/lib/scripts/send_ip.sh
 

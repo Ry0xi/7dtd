@@ -31,20 +31,32 @@ check_action() {
 	[[ "$(players)" -eq "0" ]]
 }
 
+echo '------------start_wait_start------------'
+
 sleep $STARTWAIT
+
+echo '------------start_wait_end------------'
 
 while :; do
 	sleep $WAIT
 	check_action || continue
-	echo 1..
+	echo 'after_wait_1'
+
 	sleep $WAIT
 	check_action  || continue
-	echo 2..
+	echo 'after_wait_2'
+
 	sleep $WAIT
 	check_action  || continue
 	break
 done
 
+post_discord "${SERVERNAME}サーバーを停止しました。"
+
+echo 'down_cron_before_shutdown'
+
 stop_backup_shutdown
+
+echo 'down_cron_after_shutdown'
 
 /usr/sbin/shutdown -h now

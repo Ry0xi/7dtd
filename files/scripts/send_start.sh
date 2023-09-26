@@ -12,7 +12,9 @@ SCRIPT_DIR=$(
 
 
 check_action() {
-	grep "GameServer.Init successful" /mnt/game/log/console/sdtdserver-console.log || false
+    echo 'check_game_server_start'
+	grep "GameServer.Init successful" /mnt/game/log/console/sdtdserver-console.log >& /dev/null
+    return $?
 }
 
 while :; do
@@ -20,4 +22,4 @@ while :; do
 	sleep 10
 done
 
-output_log "${SERVERNAME}サーバーの起動が完了しました！\nゲームが始められます。\nSteamの場合はこちらから参加できます。\nURL: steam://connect/${IPADDRESS}:26900\n他の場合はIPアドレスとポート番号を入力して参加できます。\nIPアドレス: ${IPADDRESS}\nポート番号: 26900"
+post_discord "${SERVERNAME}サーバーの起動が完了しました！\nゲームが始められます。\nSteamの場合はこちらから参加できます。\nURL: steam://connect/${IPADDRESS}:26900\n他の場合はIPアドレスとポート番号を入力して参加できます。\nIPアドレス: ${IPADDRESS}\nポート番号: 26900"

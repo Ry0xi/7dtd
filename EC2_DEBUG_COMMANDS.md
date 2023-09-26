@@ -68,8 +68,8 @@ cat /mnt/game/log/console/sdtdserver-console.log | grep "GameServer.Init success
 vi /tmp/players
 ```
 
-# Spotインスタンス停止アクションの確認
+# Discordの通知内容の確認
 
 ```sh
-tail -f /var/tmp/log
+tail -f /var/tmp/discord_content
 ```

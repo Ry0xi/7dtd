@@ -119,6 +119,7 @@ stop_backup_shutdown() {
 	stop_server
 }
 
-output_log() {
-    echo "$1" >> /var/tmp/log
+# TODO: Discordに通知
+post_discord() {
+    echo "$1" >> /var/tmp/discord_content
 }
