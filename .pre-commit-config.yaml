@@ -14,7 +14,7 @@ repos:
           - eslint-plugin-prettier@^5.0.0
           - eslint-plugin-unused-imports@^3.0.0
         args: ['--ext', '.ts', '--max-warnings', '0']
-        files: ^\.\*/
+        files: ^.*/
         types: [file]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
