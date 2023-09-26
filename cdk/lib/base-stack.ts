@@ -1,6 +1,7 @@
+import type { StackProps } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
-import { aws_iam as iam, aws_ec2 as ec2, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { aws_iam as iam, aws_ec2 as ec2 } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 
 export interface SdtdBaseProps extends StackProps {
     myIP: string;

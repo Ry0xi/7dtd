@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { SdtdBase } from './base-stack';
+
+import type { SdtdBase } from '@/cdk/lib/base-stack';
 
 export interface SdtdProps extends cdk.StackProps {
     // EBSボリュームサイズ(GB)

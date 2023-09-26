@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { SdtdCdkStack } from '../lib/sdtd-cdk-stack';
-import { SdtdBaseStack } from '../lib/base-stack';
-import { getMyIP } from '../lib/utils';
+
+import { SdtdBaseStack } from '@/cdk/lib/base-stack';
+import { SdtdCdkStack } from '@/cdk/lib/sdtd-cdk-stack';
+import { getMyIP } from '@/cdk/lib/utils';
 
 const env = {
     account: process.env.CDK_DEFAULT_ACCOUNT,
