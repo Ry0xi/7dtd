@@ -1,5 +1,5 @@
 {
-  "app": "bun ts-node --prefer-ts-exts bin/cdk.ts",
+  "app": "bun ts-node -r tsconfig-paths/register --prefer-ts-exts bin/cdk.ts",
   "watch": {
     "include": ["**"],
     "exclude": [
