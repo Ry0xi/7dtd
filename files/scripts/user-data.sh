@@ -48,7 +48,10 @@ set -ex
 
 mount_latest >> /var/tmp/userdata_mount.log 2>&1
 
+mv /mnt/game/log/console/sdtdserver-console.log /mnt/game/log/console/sdtdserver-console.log.old
+
 /var/lib/scripts/check_spot_action.sh &
+/var/lib/scripts/send_start.sh &
 /var/lib/scripts/down_cron.sh &
 # 起動
 start_game
