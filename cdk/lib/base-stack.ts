@@ -24,7 +24,16 @@ export class SdtdBaseStack extends cdk.Stack {
         super(scope, id, props);
 
         // VPC
-        const vpc = new ec2.Vpc(this, '7dtdVpc');
+        const vpc = new ec2.Vpc(this, '7dtdVpc', {
+            subnetConfiguration: [
+                {
+                    cidrMask: 24,
+                    name: 'public',
+                    subnetType: ec2.SubnetType.PUBLIC,
+                },
+            ],
+            maxAzs: 1,
+        });
 
         // Security Group
         const securityGroup = new ec2.SecurityGroup(this, '7dtdSG', {
