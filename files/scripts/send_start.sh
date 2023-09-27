@@ -12,9 +12,7 @@ SCRIPT_DIR=$(
 
 
 check_action() {
-    echo 'check_game_server_start'
 	grep "GameServer.Init successful" /mnt/game/log/console/sdtdserver-console.log >& /dev/null
-    return $?
 }
 
 while :; do

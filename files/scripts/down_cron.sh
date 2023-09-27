@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# STARTWAIT=1800
-# WAIT=300
-STARTWAIT=1500
-WAIT=60
+STARTWAIT=1800
+WAIT=300
 
 # shellcheck disable=SC1091
 . /var/tmp/aws_env
@@ -21,8 +19,7 @@ FILE=/tmp/players
 players() {
 	"${SCRIPT_DIR}"/expect/list_players.sh > $FILE
 	user=$(cat $FILE | grep "in the game" | grep -Eo "[0-9]{1,4}")
-	# [[ $user == "" ]] && user=99
-	[[ $user == "" ]] && user=0
+	[[ $user == "" ]] && user=99
 	echo "$user"
 }
 
@@ -53,10 +50,6 @@ done
 
 post_discord "${SERVERNAME}サーバーを停止しました。"
 
-echo 'down_cron_before_shutdown'
-
 stop_backup_shutdown
-
-echo 'down_cron_after_shutdown'
 
 /usr/sbin/shutdown -h now
