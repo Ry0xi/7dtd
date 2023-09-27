@@ -10,10 +10,17 @@ SCRIPT_DIR=$(
 
 . "${SCRIPT_DIR}"/utils.sh
 
+FILE=/tmp/check_spot_action_status
+
 check_action() {
 	TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") \
-        && curl -s -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/spot/instance-action \
-        | grep action
+    && RESPONSE=$(curl -s -w "%{http_code}" -H "X-aws-ec2-metadata-token: $TOKEN" -o $FILE http://169.254.169.254/latest/meta-data/spot/instance-action)
+
+    if [ "$RESPONSE" == "200" ]; then
+        grep action $FILE && return 0
+    else
+        return 2
+    fi
 }
 
 start_shutdown() {
@@ -29,7 +36,6 @@ start_shutdown() {
 }
 
 while :; do
-    echo 'check_spot_action'
 	check_action && start_shutdown
 	sleep 10
 done
