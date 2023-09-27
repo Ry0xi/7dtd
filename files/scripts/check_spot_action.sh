@@ -11,8 +11,9 @@ SCRIPT_DIR=$(
 . "${SCRIPT_DIR}"/utils.sh
 
 check_action() {
-    echo 'check_spot_action'
-	TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") && curl -s -H "X-aws-ec2-metadata-token: $TOKEN" v http://169.254.169.254/latest/meta-data/spot/instance-action | grep action
+	TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") \
+        && curl -s -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/spot/instance-action \
+        | grep action
 }
 
 start_shutdown() {
@@ -28,6 +29,7 @@ start_shutdown() {
 }
 
 while :; do
+    echo 'check_spot_action'
 	check_action && start_shutdown
 	sleep 10
 done
