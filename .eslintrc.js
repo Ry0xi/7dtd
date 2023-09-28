@@ -41,12 +41,6 @@ const config = {
             },
         ],
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
-        'no-console': [
-            'warn',
-            {
-                allow: ['warn', 'info', 'error'],
-            },
-        ],
         'no-restricted-syntax': [
             'warn',
             {
