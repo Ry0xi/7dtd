@@ -5,6 +5,7 @@ import {
     aws_ec2 as ec2,
     aws_lambda as lambda,
 } from 'aws-cdk-lib';
+import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
 
@@ -202,6 +203,8 @@ export class SdtdBaseStack extends cdk.Stack {
         commandFunc.role.attachInlinePolicy(lambdaPolicy);
         commandFunc.grantInvoke(handler);
 
-        // TODO: API Gateway
+        handler.addFunctionUrl({
+            authType: FunctionUrlAuthType.NONE,
+        });
     }
 }
