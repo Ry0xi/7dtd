@@ -2,7 +2,7 @@
 
 setup() {
     yum update -y
-    yum install -y docker jq
+    yum install -y docker jq expect telnet
     service docker start
     usermod -a -G docker ec2-user
 
@@ -19,6 +19,8 @@ set +ex
 
 SERVERNAME=$1
 VOLUMESIZE=$2
+PREFIX=$3
+SNAPSHOTGEN=$4
 
 TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 AZ=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/availability-zone)
@@ -29,8 +31,10 @@ INSTANCEID=$(curl -sH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/
 AWS_DEFAULT_REGION=$(echo "${AZ}" | sed -e "s/.$//")
 
 cat <<EOS >/var/tmp/aws_env
+export PREFIX=${PREFIX}
 export SERVERNAME=${SERVERNAME}
 export VOLUMESIZE=${VOLUMESIZE}
+export SNAPSHOTGEN=${SNAPSHOTGEN}
 export AZ=${AZ}
 export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
 export INSTANCEID=${INSTANCEID}
@@ -40,9 +44,16 @@ EOS
 # shellcheck disable=SC1091
 . /var/lib/scripts/utils.sh
 
-set -ex
+set -x
+
+/var/lib/scripts/send_ip.sh
 
 mount_latest >> /var/tmp/userdata_mount.log 2>&1
 
+mv /mnt/game/log/console/sdtdserver-console.log /mnt/game/log/console/sdtdserver-console.log.old
+
+/var/lib/scripts/check_spot_action.sh &
+/var/lib/scripts/send_start.sh &
+/var/lib/scripts/down_cron.sh &
 # 起動
 start_game

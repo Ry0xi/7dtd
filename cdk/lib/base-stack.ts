@@ -4,6 +4,7 @@ import { aws_iam as iam, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 
 export interface SdtdBaseProps extends StackProps {
+    prefix: string;
     myIP: string;
 }
 
@@ -23,7 +24,16 @@ export class SdtdBaseStack extends cdk.Stack {
         super(scope, id, props);
 
         // VPC
-        const vpc = new ec2.Vpc(this, '7dtdVpc');
+        const vpc = new ec2.Vpc(this, '7dtdVpc', {
+            subnetConfiguration: [
+                {
+                    cidrMask: 24,
+                    name: 'public',
+                    subnetType: ec2.SubnetType.PUBLIC,
+                },
+            ],
+            maxAzs: 1,
+        });
 
         // Security Group
         const securityGroup = new ec2.SecurityGroup(this, '7dtdSG', {
@@ -60,6 +70,28 @@ export class SdtdBaseStack extends cdk.Stack {
                         'ec2:CreateTags',
                     ],
                     resources: ['*'],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        'kms:Decrypt',
+                        'ssm:GetParametersByPath',
+                        'ssm:GetParameters',
+                        'ssm:GetParameter',
+                    ],
+                    resources: [
+                        'arn:aws:kms:*:*:key/CMK',
+                        `arn:aws:ssm:*:*:parameter/${props.prefix}/*`,
+                    ],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['ec2:ModifySpotFleetRequest'],
+                    resources: [
+                        'arn:aws:ec2:*:*:launch-template/*',
+                        'arn:aws:ec2:*:*:spot-fleet-request/*',
+                        'arn:aws:ec2:*:*:subnet/*',
+                    ],
                 }),
             ],
         });
