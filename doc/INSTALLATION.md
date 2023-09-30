@@ -2,12 +2,6 @@
 
 ## Prerequisite
 
-### Docker
-
-Lambda関数のデプロイ時に必要です。
-
-- install: https://docs.docker.com/engine/install/
-
 ### Node.js
 
 - nodenv などの Node.js バージョン管理ツールを利用を推奨

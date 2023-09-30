@@ -49,12 +49,10 @@ cdkディレクトリでcdkコマンドを実行します。
 cd ./cdk && cdk deploy --all
 ```
 
-Lambda関数をデプロイする際はDockerを起動しておく必要があります。
-
-また、デプロイ前に各Lambda関数の依存関係をインストールする必要があります。
+デプロイ前にLambda関数の依存関係をインストールする必要があります。
 
 ```sh
-cd ./functions/<directory> && npm i
+cd ./functions && npm i
 ```
 
 ### デバッグ
