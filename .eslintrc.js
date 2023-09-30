@@ -53,10 +53,6 @@ const config = {
                 message:
                     'iterators/generators require regenerator-runtime, which is too heavyweight for this guide to allow them. Separately, loops should be avoided in favor of array iterations.',
             },
-            {
-                selector: 'TSEnumDeclaration',
-                message: "Don't declare enums",
-            },
         ],
         'prefer-arrow-callback': 'warn',
         'prefer-const': 'warn',
