@@ -169,9 +169,9 @@ export class SdtdBaseStack extends cdk.Stack {
         };
 
         // Lambda
-        const commandFunc = new NodejsFunction(this, 'commands', {
-            entry: '../functions/commands/handler.ts',
-            depsLockFilePath: '../functions/commands/package-lock.json',
+        const commandFunc = new NodejsFunction(this, 'ServerCommand', {
+            entry: '../functions/handlers/server-command-handler/index.ts',
+            depsLockFilePath: '../functions/package-lock.json',
             runtime: lambda.Runtime.NODEJS_18_X,
             memorySize: 128,
             timeout: cdk.Duration.seconds(300),
@@ -183,9 +183,9 @@ export class SdtdBaseStack extends cdk.Stack {
             },
         });
 
-        const handler = new NodejsFunction(this, 'discordbot', {
-            entry: '../functions/discordbot/handler.ts',
-            depsLockFilePath: '../functions/discordbot/package-lock.json',
+        const handler = new NodejsFunction(this, 'DiscordBot', {
+            entry: '../functions/handlers/discord-bot-handler/index.ts',
+            depsLockFilePath: '../functions/package-lock.json',
             runtime: lambda.Runtime.NODEJS_18_X,
             memorySize: 128,
             timeout: cdk.Duration.seconds(300),
