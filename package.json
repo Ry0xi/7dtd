@@ -4,6 +4,7 @@
   "bin": {
     "7dtd-cdk": "cdk/bin/cdk.js"
   },
+  "private": true,
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "watch": "tsc -w",
