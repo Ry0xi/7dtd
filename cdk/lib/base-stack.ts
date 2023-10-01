@@ -179,6 +179,9 @@ export class SdtdBaseStack extends cdk.Stack {
             environment: {
                 PREFIX: props.prefix,
             },
+            bundling: {
+                minify: true,
+            },
         });
 
         const handler = new NodejsFunction(this, 'DiscordBot', {
@@ -191,6 +194,9 @@ export class SdtdBaseStack extends cdk.Stack {
                 PREFIX: props.prefix,
                 CMDFUNC: commandFunc.functionArn,
                 SERVER_NAME: props.serverName,
+            },
+            bundling: {
+                minify: true,
             },
         });
 
