@@ -1,0 +1,12 @@
+{
+  "id": "1234567890",
+  "application_id": "1234567890",
+  "type": 2,
+  "token": "bar",
+  "data": {
+    "id": "data_id",
+    "name": "start",
+    "type": 1,
+    "options": [{ "name": "server", "value": "Server1" }]
+  }
+}
