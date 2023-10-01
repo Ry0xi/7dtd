@@ -2,35 +2,28 @@
 
 7 Days to Dieのマルチプレイサーバーを、AWS上に構築する。
 
-## ロードマップ
+## Links
 
-- [x] CDKを使って構築する
-- [x] 2023年9月29日金曜日までにマルチプレイができるようにする
-- [ ] Discordのコマンドで起動できる
-- [x] サーバー停止機能(自動)
-- [x] データ永続化(バックアップ)
-- [ ] Discord通知
-  - steam用URL & IP,Port
-- [x] EC2 Spot Fleetを利用する
-- [ ] コストを月1000円以内に抑える
+- [インストールガイド](./doc/INSTALLATION.md)
+- [残タスク](./doc/TASKS.md)
 
-## 開発環境
+## Directories
 
-### Prerequisite
+- cdk: CDK関連
+  - bin/cdk.ts: CDKのメイン
+  - lib/\*-stack.ts: スタックの設定
+- files: EC2上で利用するスクリプトなど
+- functions: Lambda関連
 
-#### Bun
+## Usage
 
-```sh
-curl -fsSL https://bun.sh/install | bash
-```
+### 初期設定
 
 ```sh
 bun install
 ```
 
-```sh
-bun run hoge
-```
+事前に[インストールガイド](./doc/INSTALLATION.md)を参考に、必要なツールをインストールしてください。
 
 ### コードフォーマット
 
@@ -48,19 +41,23 @@ bun run check
 
 [SHOULD] エディターの保存時の設定でPrettierとESLintを実行するのを推奨します。
 
-### ディレクトリ構造
+### デプロイ
 
-- cdk: CDK関連
-  - bin/cdk.ts: CDKのメイン
-  - lib/\*-stack.ts: スタックの設定
-- files: EC2上で利用するスクリプトなど
-- functions: Lambda関連
-
-### CDKのデプロイ
+cdkディレクトリでcdkコマンドを実行します。
 
 ```sh
-cdk deploy --all
+cd ./cdk && cdk deploy --all
 ```
+
+デプロイ前にLambda関数の依存関係をインストールする必要があります。
+
+```sh
+cd ./functions && npm i
+```
+
+### デバッグ
+
+- [EC2でデバッグする際のコマンド](./doc/EC2_DEBUG_COMMANDS.md)
 
 ### サーバーの起動・停止
 

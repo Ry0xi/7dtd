@@ -41,27 +41,12 @@ const config = {
             },
         ],
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
-        'no-console': [
-            'warn',
-            {
-                allow: ['warn', 'info', 'error'],
-            },
-        ],
         'no-restricted-syntax': [
             'warn',
             {
                 selector: 'ForInStatement',
                 message:
                     'for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.',
-            },
-            {
-                selector: 'ForOfStatement',
-                message:
-                    'iterators/generators require regenerator-runtime, which is too heavyweight for this guide to allow them. Separately, loops should be avoided in favor of array iterations.',
-            },
-            {
-                selector: 'TSEnumDeclaration',
-                message: "Don't declare enums",
             },
         ],
         'prefer-arrow-callback': 'warn',

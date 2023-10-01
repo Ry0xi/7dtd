@@ -11,6 +11,7 @@ export interface SdtdProps extends cdk.StackProps {
     volumeSize: number;
     snapshotGen: number;
     base: SdtdBase;
+    discordPublicKey: string;
 }
 
 export class SdtdCdkStack extends cdk.Stack {
@@ -81,6 +82,7 @@ export class SdtdCdkStack extends cdk.Stack {
             { key: 'sfrID', value: cfnSpotFleet.attrId },
             { key: 'volumeSize', value: `${props.volumeSize}` },
             { key: 'snapshotGen', value: `${props.snapshotGen}` },
+            { key: 'discordPublicKey', value: `${props.discordPublicKey}` },
         ].map((kv) => ({
             kv: kv,
             param: new ssm.StringParameter(this, kv.key, {

@@ -1,11 +1,18 @@
 import type { StackProps } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
-import { aws_iam as iam, aws_ec2 as ec2 } from 'aws-cdk-lib';
+import {
+    aws_iam as iam,
+    aws_ec2 as ec2,
+    aws_lambda as lambda,
+} from 'aws-cdk-lib';
+import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
 
 export interface SdtdBaseProps extends StackProps {
     prefix: string;
     myIP: string;
+    serverName: string;
 }
 
 export interface SdtdBase {
@@ -96,6 +103,39 @@ export class SdtdBaseStack extends cdk.Stack {
             ],
         });
 
+        const lambdaPolicy = new iam.Policy(this, 'lambdaPolicy', {
+            statements: [
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        'kms:Decrypt',
+                        'ssm:GetParametersByPath',
+                        'ssm:GetParameters',
+                        'ssm:GetParameter',
+                        'ssm:PutParameter',
+                    ],
+                    resources: [
+                        'arn:aws:kms:*:*:key/CMK',
+                        `arn:aws:ssm:*:*:parameter/${props.prefix}/*`,
+                    ],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['ec2:ModifySpotFleetRequest'],
+                    resources: [
+                        'arn:aws:ec2:*:*:launch-template/*',
+                        'arn:aws:ec2:*:*:spot-fleet-request/*',
+                        'arn:aws:ec2:*:*:subnet/*',
+                    ],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['ec2:DescribeSpotFleetRequests'],
+                    resources: ['*'],
+                }),
+            ],
+        });
+
         // IAM Role
         const fleetSpotRole = new iam.Role(this, 'spotfleetRole', {
             managedPolicies: [
@@ -129,6 +169,44 @@ export class SdtdBaseStack extends cdk.Stack {
             subnets: vpc.publicSubnets.map((d) => d.subnetId),
         };
 
-        // TODO: Lambda & API Gateway
+        // Lambda
+        const commandFunc = new NodejsFunction(this, 'ServerCommand', {
+            entry: '../functions/handlers/server-command-handler/index.ts',
+            depsLockFilePath: '../functions/package-lock.json',
+            runtime: lambda.Runtime.NODEJS_18_X,
+            memorySize: 128,
+            timeout: cdk.Duration.seconds(300),
+            environment: {
+                PREFIX: props.prefix,
+            },
+            bundling: {
+                minify: true,
+            },
+        });
+
+        const handler = new NodejsFunction(this, 'DiscordBot', {
+            entry: '../functions/handlers/discord-bot-handler/index.ts',
+            depsLockFilePath: '../functions/package-lock.json',
+            runtime: lambda.Runtime.NODEJS_18_X,
+            memorySize: 128,
+            timeout: cdk.Duration.seconds(300),
+            environment: {
+                PREFIX: props.prefix,
+                CMDFUNC: commandFunc.functionArn,
+                SERVER_NAME: props.serverName,
+            },
+            bundling: {
+                minify: true,
+            },
+        });
+
+        handler.role?.attachInlinePolicy(lambdaPolicy);
+        if (commandFunc.role === undefined) return;
+        commandFunc.role.attachInlinePolicy(lambdaPolicy);
+        commandFunc.grantInvoke(handler);
+
+        handler.addFunctionUrl({
+            authType: FunctionUrlAuthType.NONE,
+        });
     }
 }
