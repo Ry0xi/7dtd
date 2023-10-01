@@ -8,6 +8,7 @@ import type { APIGatewayProxyResult } from 'aws-lambda';
 
 import type { EventType } from '@/functions/common/interaction-event-schema';
 import { eventSchema } from '@/functions/common/interaction-event-schema';
+import discordHandlePingMessageMiddleware from '@/functions/handlers/discord-bot-handler/middlewares/discord-handle-ping-message';
 
 const getEnv = (key: string): string => {
     const env = process.env[key];
@@ -40,5 +41,6 @@ export const handler = middy()
             eventSchema: transpileSchema(eventSchema, { coerceTypes: false }),
         }),
     )
+    .use(discordHandlePingMessageMiddleware())
     .use(httpErrorHandlerMiddleware())
     .handler(handleInteraction);
