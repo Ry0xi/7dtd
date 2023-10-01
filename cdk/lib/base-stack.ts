@@ -12,6 +12,7 @@ import type { Construct } from 'constructs';
 export interface SdtdBaseProps extends StackProps {
     prefix: string;
     myIP: string;
+    serverName: string;
 }
 
 export interface SdtdBase {
@@ -189,6 +190,7 @@ export class SdtdBaseStack extends cdk.Stack {
             environment: {
                 PREFIX: props.prefix,
                 CMDFUNC: commandFunc.functionArn,
+                SERVER_NAME: props.serverName,
             },
         });
 
