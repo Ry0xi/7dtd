@@ -60,7 +60,7 @@ _delete_old_snapshot() {
 
 get_ssm_value() {
 	SSMPATH=/${PREFIX}/${SERVERNAME}
-	aws ssm get-parameter --name "${SSMPATH}/${1}" --with-decryption | jq .Parameter.Value -r
+	aws ssm get-parameter --name "$SSMPATH/$1" --with-decryption | jq .Parameter.Value -r
 }
 
 mount_latest() {
@@ -119,7 +119,18 @@ stop_backup_shutdown() {
 	stop_server
 }
 
-# TODO: Discordに通知
 post_discord() {
-    echo "$1" >> /var/tmp/discord_content
+    DISCORD_CHANNEL_ID=$(get_ssm_value discordChannelId)
+	BOT_TOKEN=$(get_ssm_value discordBotToken)
+	URL="https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"
+
+    curl -X POST -H "Content-Type: application/json" \
+        -H "Authorization: Bot ${BOT_TOKEN}" \
+        "$URL" \
+        -d @- << EOF
+            {
+                "content": "$1",
+                "tts": false
+            }
+EOF
 }

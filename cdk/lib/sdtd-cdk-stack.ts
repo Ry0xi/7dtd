@@ -12,6 +12,8 @@ export interface SdtdProps extends cdk.StackProps {
     snapshotGen: number;
     base: SdtdBase;
     discordPublicKey: string;
+    discordChannelId: string;
+    discordBotToken: string;
 }
 
 export class SdtdCdkStack extends cdk.Stack {
@@ -83,6 +85,8 @@ export class SdtdCdkStack extends cdk.Stack {
             { key: 'volumeSize', value: `${props.volumeSize}` },
             { key: 'snapshotGen', value: `${props.snapshotGen}` },
             { key: 'discordPublicKey', value: `${props.discordPublicKey}` },
+            { key: 'discordChannelId', value: `${props.discordChannelId}` },
+            { key: 'discordBotToken', value: `${props.discordBotToken}` },
         ].map((kv) => ({
             kv: kv,
             param: new ssm.StringParameter(this, kv.key, {

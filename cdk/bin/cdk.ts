@@ -30,4 +30,6 @@ new SdtdCdkStack(app, serverName, {
     snapshotGen: 3,
     base: baseStack.base,
     discordPublicKey: getRequiredEnv('DISCORD_PUBLIC_KEY'),
+    discordChannelId: getRequiredEnv('DISCORD_CHANNEL_ID'),
+    discordBotToken: getRequiredEnv('DISCORD_BOT_TOKEN'),
 });
