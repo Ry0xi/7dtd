@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 
 import { SdtdBaseStack } from '@/cdk/lib/base-stack';
 import { SdtdCdkStack } from '@/cdk/lib/sdtd-cdk-stack';
-import { getMyIP, getRequiredEnv } from '@/cdk/lib/utils';
+import { getMyIP, getRequiredEnv, sshPublicKey } from '@/cdk/lib/utils';
 
 const prefix = getRequiredEnv('PREFIX');
 const serverName = getRequiredEnv('SERVER_NAME');
@@ -21,6 +21,7 @@ const baseStack = new SdtdBaseStack(app, `${prefix}Base`, {
     prefix: prefix,
     myIP: getMyIP(),
     serverName: serverName,
+    sshPublicKey: sshPublicKey(),
 });
 
 new SdtdCdkStack(app, serverName, {

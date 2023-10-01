@@ -38,7 +38,7 @@ export class SdtdCdkStack extends cdk.Stack {
         const launchTemplateName = `${this.stackName}Template`;
         const template = new ec2.LaunchTemplate(this, 'template', {
             userData: multipartUserData,
-            keyName: '7dtdEc2Key',
+            keyName: props.base.keyPairName,
             machineImage: ec2.MachineImage.latestAmazonLinux2(),
             launchTemplateName: launchTemplateName,
             securityGroup: props.base.securityGroup,

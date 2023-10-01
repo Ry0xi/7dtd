@@ -13,6 +13,7 @@ export interface SdtdBaseProps extends StackProps {
     prefix: string;
     myIP: string;
     serverName: string;
+    sshPublicKey: string;
 }
 
 export interface SdtdBase {
@@ -21,6 +22,7 @@ export interface SdtdBase {
     ec2role: iam.Role;
     fleetSpotRoleArn: string;
     subnets: string[];
+    keyPairName: string;
 }
 
 export class SdtdBaseStack extends cdk.Stack {
@@ -161,12 +163,19 @@ export class SdtdBaseStack extends cdk.Stack {
             path: '/',
         });
 
+        // ssh key pair
+        const keyPair = new ec2.CfnKeyPair(this, 'MyCfnKeyPair', {
+            keyName: `${this.stackName}KeyPair`,
+            publicKeyMaterial: props.sshPublicKey,
+        });
+
         this.base = {
             vpc: vpc,
             securityGroup: securityGroup,
             ec2role: ec2Role,
             fleetSpotRoleArn: fleetSpotRole.roleArn,
             subnets: vpc.publicSubnets.map((d) => d.subnetId),
+            keyPairName: keyPair.keyName,
         };
 
         // Lambda
