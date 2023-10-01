@@ -11,8 +11,6 @@ const numericEnumToArray = (values: unknown): number[] =>
 // イベントの型
 export interface EventType extends Omit<APIGatewayProxyEvent, 'body'> {
     body: InteractionBodyType;
-    // added by my middleware
-    rawBody: string;
 }
 
 export interface InteractionBodyType {

@@ -1,0 +1,19 @@
+{
+  "name": "start",
+  "type": 1,
+  "description": "サーバーを起動する",
+  "options": [
+    {
+      "name": "server",
+      "description": "サーバーの種類",
+      "type": 3,
+      "required": true,
+      "choices": [
+        {
+          "name": "7 Days to Die [SdtdPVE01]",
+          "value": "SdtdPVE01"
+        }
+      ]
+    }
+  ]
+}
