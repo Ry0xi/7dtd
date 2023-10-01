@@ -60,6 +60,11 @@ export class SdtdBaseStack extends cdk.Stack {
             ec2.Port.udpRange(26900, 26902),
             'Allow Ports for 7dtd',
         );
+        securityGroup.addIngressRule(
+            ec2.Peer.ipv4(props.myIP),
+            ec2.Port.tcp(22),
+            'ssh access from home',
+        );
 
         // IAM Policy
         const policy = new iam.ManagedPolicy(this, 'EC2Policy', {
