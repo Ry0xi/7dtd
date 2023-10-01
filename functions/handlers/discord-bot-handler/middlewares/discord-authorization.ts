@@ -7,7 +7,10 @@ import type { EventType } from '@/functions/common/interaction-event-schema';
 import { getEnv, getParameter } from '@/functions/common/utils';
 
 const discordAuthorizationMiddleware = (): middy.MiddlewareObj<
-    EventType,
+    EventType & {
+        // added by my middleware
+        rawBody: string;
+    },
     APIGatewayProxyResult
 > => {
     /**
@@ -16,7 +19,10 @@ const discordAuthorizationMiddleware = (): middy.MiddlewareObj<
      * @see https://discord.com/developers/docs/interactions/receiving-and-responding#security-and-authorization
      */
     const discordAuthorizationMiddlewareBefore: middy.MiddlewareFn<
-        EventType,
+        EventType & {
+            // added by my middleware
+            rawBody: string;
+        },
         APIGatewayProxyResult
     > = async (request): Promise<APIGatewayProxyResult | void> => {
         const headers = request.event.headers;
@@ -25,11 +31,6 @@ const discordAuthorizationMiddleware = (): middy.MiddlewareObj<
         const publicKey = await getParameter(
             `/${getEnv('PREFIX')}/${getEnv('SERVER_NAME')}/discordPublicKey`,
         );
-
-        console.log('signature:', signature);
-        console.log('timestamp:', timestamp);
-        console.log('publicKey:', publicKey);
-        console.log('rawBody:', request.event.rawBody);
 
         if (
             !signature ||

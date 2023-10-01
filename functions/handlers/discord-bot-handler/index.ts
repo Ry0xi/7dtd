@@ -6,11 +6,14 @@ import httpJsonBodyParserMiddleware from '@middy/http-json-body-parser';
 import inputOutputLoggerMiddleware from '@middy/input-output-logger';
 import validatorMiddleware from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
+import { InvocationType } from 'aws-cdk-lib/triggers';
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { InteractionType } from 'discord-interactions';
+import { InteractionResponseType, InteractionType } from 'discord-interactions';
 
-import type { EventType } from '@/functions/common/interaction-event-schema';
-import { eventSchema } from '@/functions/common/interaction-event-schema';
+import {
+    eventSchema,
+    type EventType,
+} from '@/functions/common/interaction-event-schema';
 import { getEnv } from '@/functions/common/utils';
 import discordAuthorizationMiddleware from '@/functions/handlers/discord-bot-handler/middlewares/discord-authorization';
 import discordHandlePingMessageMiddleware from '@/functions/handlers/discord-bot-handler/middlewares/discord-handle-ping-message';
@@ -24,6 +27,7 @@ const invokeLambda = async (
         FunctionName: functionName,
         Payload: payload,
         LogType: LogType.Tail,
+        InvocationType: InvocationType.EVENT,
     });
 
     await client.send(command);
@@ -47,9 +51,15 @@ export const handleInteraction = async (
         delete event.rawBody;
 
         await invokeLambda(getEnv('CMDFUNC'), JSON.stringify(event));
+
         return {
             statusCode: 200,
-            body: '',
+            body: JSON.stringify({
+                type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
         };
     }
 
