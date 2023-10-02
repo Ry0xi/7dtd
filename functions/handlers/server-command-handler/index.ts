@@ -1,4 +1,8 @@
-import { EC2Client } from '@aws-sdk/client-ec2';
+import {
+    DescribeInstancesCommand,
+    DescribeSpotFleetInstancesCommand,
+    EC2Client,
+} from '@aws-sdk/client-ec2';
 import {
     DescribeSpotFleetRequestsCommand,
     ModifySpotFleetRequestCommand,
@@ -64,6 +68,45 @@ const setCapacity = async (
     await client.send(command);
 };
 
+const getServerIpAddress = async (
+    client: EC2Client,
+    sfrId: string,
+): Promise<string | void> => {
+    const command = new DescribeSpotFleetInstancesCommand({
+        SpotFleetRequestId: sfrId,
+    });
+
+    const response = await client.send(command);
+
+    let instanceId: string | undefined = undefined;
+    if (response.ActiveInstances !== undefined) {
+        for (const instance of response.ActiveInstances) {
+            if (instance.InstanceId !== undefined) {
+                instanceId = instance.InstanceId;
+                break;
+            }
+        }
+    }
+
+    if (typeof instanceId === 'string') {
+        const command = new DescribeInstancesCommand({
+            InstanceIds: [instanceId],
+        });
+
+        const response2 = await client.send(command);
+
+        if (response2.Reservations) {
+            for (const reservation of response2.Reservations) {
+                if (reservation.Instances !== undefined) {
+                    for (const instance of reservation.Instances) {
+                        return instance.PublicIpAddress;
+                    }
+                }
+            }
+        }
+    }
+};
+
 const sendToDiscord = async (
     applicationId: string,
     token: string,
@@ -114,10 +157,15 @@ export const handleServerCommand = async (
             const ec2Client = new EC2Client();
             const capacity = await getCapacity(ec2Client, sfrId);
             if (capacity > 0) {
+                const ipAddress = await getServerIpAddress(ec2Client, sfrId);
                 await sendToDiscord(
                     discordApplicationId,
                     discordToken,
-                    `🖥️🧟‍♂️サーバー[${serverName}]はすでに稼働中です👌`,
+                    `🖥️🧟‍♂️サーバー[${serverName}]はすでに稼働中です👌${
+                        typeof ipAddress === 'string'
+                            ? `\n\nIPアドレス: \`${ipAddress}\`\nポート番号: \`26900\``
+                            : ''
+                    }`,
                 );
                 return {
                     statusCode: 200,

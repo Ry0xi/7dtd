@@ -137,7 +137,11 @@ export class SdtdBaseStack extends cdk.Stack {
                 }),
                 new iam.PolicyStatement({
                     effect: iam.Effect.ALLOW,
-                    actions: ['ec2:DescribeSpotFleetRequests'],
+                    actions: [
+                        'ec2:DescribeInstances',
+                        'ec2:DescribeSpotFleetRequests',
+                        'ec2:DescribeSpotFleetInstances',
+                    ],
                     resources: ['*'],
                 }),
             ],
