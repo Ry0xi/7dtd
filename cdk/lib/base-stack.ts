@@ -177,6 +177,7 @@ export class SdtdBaseStack extends cdk.Stack {
             keyName: `${this.stackName}KeyPair`,
             publicKeyMaterial: props.sshPublicKey,
         });
+        keyPair.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
         this.base = {
             vpc: vpc,
