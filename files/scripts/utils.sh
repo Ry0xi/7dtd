@@ -103,12 +103,26 @@ stop_server() {
 }
 
 start_game() {
+    # メンテナンスモードの場合はスタートしない
+    if [[ $(get_ssm_value maintenance) == true ]]; then
+        echo 'maintenance mode.' && return
+    fi
+
     docker-compose -f /var/lib/config/compose.yaml up -d
     echo 'game started.'
 }
 
 stop_game() {
     docker-compose -f /var/lib/config/compose.yaml down
+}
+
+# usage(in): switch_maintenance "true"
+# usage(out): switch_maintenance "false"
+switch_maintenance() {
+    [[ -z $PREFIX ]] && return
+    [[ $SERVERNAME == "" ]] && SERVERNAME=$2
+	[[ $SERVERNAME == "" ]] && return
+    aws ssm put-parameter --name "/$PREFIX/$SERVERNAME/maintenance" --type "String" --value "$1" --overwrite
 }
 
 stop_backup_shutdown() {
@@ -120,6 +134,9 @@ stop_backup_shutdown() {
 }
 
 post_discord() {
+    # メンテナンスモードのときは返信しない
+    [[ $(get_ssm_value maintenance) == true ]] && return
+
     DISCORD_CHANNEL_ID=$(get_ssm_value discordChannelId)
 	BOT_TOKEN=$(get_ssm_value discordBotToken)
 	URL="https://discord.com/api/v10/channels/$DISCORD_CHANNEL_ID/messages"

@@ -87,6 +87,7 @@ export class SdtdCdkStack extends cdk.Stack {
             { key: 'discordPublicKey', value: `${props.discordPublicKey}` },
             { key: 'discordChannelId', value: `${props.discordChannelId}` },
             { key: 'discordBotToken', value: `${props.discordBotToken}` },
+            { key: 'maintenance', value: 'false' },
         ].map((kv) => ({
             kv: kv,
             param: new ssm.StringParameter(this, kv.key, {

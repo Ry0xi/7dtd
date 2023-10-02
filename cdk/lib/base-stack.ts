@@ -92,6 +92,7 @@ export class SdtdBaseStack extends cdk.Stack {
                         'ssm:GetParametersByPath',
                         'ssm:GetParameters',
                         'ssm:GetParameter',
+                        'ssm:PutParameter',
                     ],
                     resources: [
                         'arn:aws:kms:*:*:key/CMK',
@@ -197,6 +198,7 @@ export class SdtdBaseStack extends cdk.Stack {
             timeout: cdk.Duration.seconds(300),
             environment: {
                 PREFIX: props.prefix,
+                SERVER_NAME: props.serverName,
             },
             bundling: {
                 minify: true,
