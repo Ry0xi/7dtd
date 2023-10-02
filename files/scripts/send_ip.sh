@@ -10,4 +10,4 @@ SCRIPT_DIR=$(
 
 . "${SCRIPT_DIR}"/utils.sh
 
-post_discord "${SERVERNAME}サーバーの起動処理を始めました。しばらくお待ちください。\nサーバーのIPアドレス: ${IPADDRESS}"
+post_discord "🖥️🧟‍♂️サーバー[${SERVERNAME}]の起動準備を開始します！\nサーバーの起動が完了するまでしばらくお待ちください。\nサーバーのIPアドレス: \`${IPADDRESS}\`"

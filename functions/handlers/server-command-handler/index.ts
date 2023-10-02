@@ -1,4 +1,8 @@
-import { EC2Client } from '@aws-sdk/client-ec2';
+import {
+    DescribeInstancesCommand,
+    DescribeSpotFleetInstancesCommand,
+    EC2Client,
+} from '@aws-sdk/client-ec2';
 import {
     DescribeSpotFleetRequestsCommand,
     ModifySpotFleetRequestCommand,
@@ -7,26 +11,20 @@ import middy from '@middy/core';
 import httpErrorHandlerMiddleware from '@middy/http-error-handler';
 import httpJsonBodyParserMiddleware from '@middy/http-json-body-parser';
 import inputOutputLoggerMiddleware from '@middy/input-output-logger';
+import { createError } from '@middy/util';
 import validatorMiddleware from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
 import type { APIGatewayProxyResult } from 'aws-lambda';
 
-import type {
-    ApplicationCommandInteractionData,
-    EventType,
-} from '@/functions/common/interaction-event-schema';
+import type { EventType } from '@/functions/common/interaction-event-schema';
 import { eventSchema } from '@/functions/common/interaction-event-schema';
-import { getEnv, getParameter } from '@/functions/common/utils';
-
-const getServerName = (data: ApplicationCommandInteractionData): string => {
-    for (const option of data.options) {
-        if (option.name === 'server' && typeof option.value === 'string') {
-            return option.value;
-        }
-    }
-
-    return '';
-};
+import {
+    getEnv,
+    getParameter,
+    getServerName,
+    respondToDiscord,
+} from '@/functions/common/utils';
+import checkMaintenanceModeMiddleware from '@/functions/handlers/server-command-handler/middlewares/check-maintenance-mode';
 
 const getCapacity = async (
     client: EC2Client,
@@ -64,28 +62,42 @@ const setCapacity = async (
     await client.send(command);
 };
 
-const sendToDiscord = async (
-    applicationId: string,
-    token: string,
-    content: string,
-): Promise<void> => {
-    const url = `https://discord.com/api/v10/webhooks/${applicationId}/${token}`;
+const getServerIpAddress = async (
+    client: EC2Client,
+    sfrId: string,
+): Promise<string | void> => {
+    const command = new DescribeSpotFleetInstancesCommand({
+        SpotFleetRequestId: sfrId,
+    });
 
-    const params = {
-        method: 'POST',
-        body: JSON.stringify({
-            content: content,
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
+    const response = await client.send(command);
 
-    const response = await fetch(url, params);
+    let instanceId: string | undefined = undefined;
+    if (response.ActiveInstances !== undefined) {
+        for (const instance of response.ActiveInstances) {
+            if (instance.InstanceId !== undefined) {
+                instanceId = instance.InstanceId;
+                break;
+            }
+        }
+    }
 
-    if (!response.ok) {
-        console.warn('Could not post to discord. message:', content);
-        console.warn('response', await response.json());
+    if (typeof instanceId === 'string') {
+        const command = new DescribeInstancesCommand({
+            InstanceIds: [instanceId],
+        });
+
+        const response2 = await client.send(command);
+
+        if (response2.Reservations) {
+            for (const reservation of response2.Reservations) {
+                if (reservation.Instances !== undefined) {
+                    for (const instance of reservation.Instances) {
+                        return instance.PublicIpAddress;
+                    }
+                }
+            }
+        }
     }
 };
 
@@ -96,7 +108,7 @@ export const handleServerCommand = async (
 
     const data = event.body.data;
     if (data === undefined)
-        throw new Error('"data" is required to start server.');
+        throw createError(400, '"data" is required to start server.');
 
     const serverName = getServerName(data);
 
@@ -114,10 +126,15 @@ export const handleServerCommand = async (
             const ec2Client = new EC2Client();
             const capacity = await getCapacity(ec2Client, sfrId);
             if (capacity > 0) {
-                await sendToDiscord(
+                const ipAddress = await getServerIpAddress(ec2Client, sfrId);
+                await respondToDiscord(
                     discordApplicationId,
                     discordToken,
-                    `🖥️サーバー[${serverName}]はすでに稼働中です`,
+                    `🖥️🧟‍♂️サーバー[${serverName}]はすでに稼働中です👌${
+                        typeof ipAddress === 'string'
+                            ? `\n\nIPアドレス: \`${ipAddress}\`\nポート番号: \`26900\``
+                            : ''
+                    }`,
                 );
                 return {
                     statusCode: 200,
@@ -131,16 +148,16 @@ export const handleServerCommand = async (
             // サーバー起動
             await setCapacity(ec2Client, sfrId, 1);
 
-            await sendToDiscord(
+            await respondToDiscord(
                 discordApplicationId,
                 discordToken,
-                `🖥️サーバー[${serverName}]を起動します👌 \n正常に起動開始出来ました😊`,
+                `🖥️🧟‍♂️サーバー[${serverName}]の起動コマンドが実行されました👌`,
             );
         } catch (error) {
-            await sendToDiscord(
+            await respondToDiscord(
                 discordApplicationId,
                 discordToken,
-                `🖥️サーバー[${serverName}]の起動でエラーが発生しました😢\nしばらくしてからもう一度お試しください🙏`,
+                `🖥️🧟‍♂️サーバー[${serverName}]の起動でエラーが発生しました😢\nしばらくしてからもう一度お試しください🙏`,
             );
             throw error;
         }
@@ -163,5 +180,6 @@ export const handler = middy<EventType>()
             eventSchema: transpileSchema(eventSchema, { coerceTypes: false }),
         }),
     )
+    .use(checkMaintenanceModeMiddleware())
     .use(httpErrorHandlerMiddleware())
     .handler(handleServerCommand);

@@ -13,6 +13,7 @@ export interface SdtdBaseProps extends StackProps {
     prefix: string;
     myIP: string;
     serverName: string;
+    sshPublicKey: string;
 }
 
 export interface SdtdBase {
@@ -21,6 +22,7 @@ export interface SdtdBase {
     ec2role: iam.Role;
     fleetSpotRoleArn: string;
     subnets: string[];
+    keyPairName: string;
 }
 
 export class SdtdBaseStack extends cdk.Stack {
@@ -58,6 +60,11 @@ export class SdtdBaseStack extends cdk.Stack {
             ec2.Port.udpRange(26900, 26902),
             'Allow Ports for 7dtd',
         );
+        securityGroup.addIngressRule(
+            ec2.Peer.ipv4(props.myIP),
+            ec2.Port.tcp(22),
+            'ssh access from home',
+        );
 
         // IAM Policy
         const policy = new iam.ManagedPolicy(this, 'EC2Policy', {
@@ -85,6 +92,7 @@ export class SdtdBaseStack extends cdk.Stack {
                         'ssm:GetParametersByPath',
                         'ssm:GetParameters',
                         'ssm:GetParameter',
+                        'ssm:PutParameter',
                     ],
                     resources: [
                         'arn:aws:kms:*:*:key/CMK',
@@ -130,7 +138,11 @@ export class SdtdBaseStack extends cdk.Stack {
                 }),
                 new iam.PolicyStatement({
                     effect: iam.Effect.ALLOW,
-                    actions: ['ec2:DescribeSpotFleetRequests'],
+                    actions: [
+                        'ec2:DescribeInstances',
+                        'ec2:DescribeSpotFleetRequests',
+                        'ec2:DescribeSpotFleetInstances',
+                    ],
                     resources: ['*'],
                 }),
             ],
@@ -161,12 +173,20 @@ export class SdtdBaseStack extends cdk.Stack {
             path: '/',
         });
 
+        // ssh key pair
+        const keyPair = new ec2.CfnKeyPair(this, 'MyCfnKeyPair', {
+            keyName: `${this.stackName}KeyPair`,
+            publicKeyMaterial: props.sshPublicKey,
+        });
+        keyPair.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
         this.base = {
             vpc: vpc,
             securityGroup: securityGroup,
             ec2role: ec2Role,
             fleetSpotRoleArn: fleetSpotRole.roleArn,
             subnets: vpc.publicSubnets.map((d) => d.subnetId),
+            keyPairName: keyPair.keyName,
         };
 
         // Lambda
@@ -178,6 +198,7 @@ export class SdtdBaseStack extends cdk.Stack {
             timeout: cdk.Duration.seconds(300),
             environment: {
                 PREFIX: props.prefix,
+                SERVER_NAME: props.serverName,
             },
             bundling: {
                 minify: true,

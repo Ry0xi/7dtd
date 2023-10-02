@@ -24,12 +24,12 @@ check_action() {
 }
 
 start_shutdown() {
-    post_discord "Amazonからスポットインスタンス中断通知を受信しました。\n10秒後に${SERVERNAME}サーバーを安全に停止します。"
+    post_discord "🖥️🧟‍♂️Amazonからスポットインスタンス中断通知を受信しました。\n10秒後にサーバー[${SERVERNAME}]を安全に停止します。"
     sleep 10
 
 	stop_backup_shutdown
 
-    post_discord "${SERVERNAME}サーバーを停止しました。"
+    post_discord "🖥️🧟‍♂️サーバー[${SERVERNAME}]を停止しました。"
 
 	/usr/sbin/shutdown -h now
 	exit

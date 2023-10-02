@@ -12,6 +12,8 @@ export interface SdtdProps extends cdk.StackProps {
     snapshotGen: number;
     base: SdtdBase;
     discordPublicKey: string;
+    discordChannelId: string;
+    discordBotToken: string;
 }
 
 export class SdtdCdkStack extends cdk.Stack {
@@ -36,7 +38,7 @@ export class SdtdCdkStack extends cdk.Stack {
         const launchTemplateName = `${this.stackName}Template`;
         const template = new ec2.LaunchTemplate(this, 'template', {
             userData: multipartUserData,
-            keyName: '7dtdEc2Key',
+            keyName: props.base.keyPairName,
             machineImage: ec2.MachineImage.latestAmazonLinux2(),
             launchTemplateName: launchTemplateName,
             securityGroup: props.base.securityGroup,
@@ -83,6 +85,9 @@ export class SdtdCdkStack extends cdk.Stack {
             { key: 'volumeSize', value: `${props.volumeSize}` },
             { key: 'snapshotGen', value: `${props.snapshotGen}` },
             { key: 'discordPublicKey', value: `${props.discordPublicKey}` },
+            { key: 'discordChannelId', value: `${props.discordChannelId}` },
+            { key: 'discordBotToken', value: `${props.discordBotToken}` },
+            { key: 'maintenance', value: 'false' },
         ].map((kv) => ({
             kv: kv,
             param: new ssm.StringParameter(this, kv.key, {
