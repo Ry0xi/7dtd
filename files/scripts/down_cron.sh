@@ -48,7 +48,7 @@ while :; do
 	break
 done
 
-post_discord "${SERVERNAME}サーバーを停止しました。"
+post_discord "🖥️🧟‍♂️接続人数が一定時間0人だったため、サーバー[${SERVERNAME}]を停止しました"
 
 stop_backup_shutdown
 

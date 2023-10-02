@@ -117,7 +117,7 @@ export const handleServerCommand = async (
                 await sendToDiscord(
                     discordApplicationId,
                     discordToken,
-                    `🖥️サーバー[${serverName}]はすでに稼働中です`,
+                    `🖥️🧟‍♂️サーバー[${serverName}]はすでに稼働中です👌`,
                 );
                 return {
                     statusCode: 200,
@@ -134,13 +134,13 @@ export const handleServerCommand = async (
             await sendToDiscord(
                 discordApplicationId,
                 discordToken,
-                `🖥️サーバー[${serverName}]を起動します👌 \n正常に起動開始出来ました😊`,
+                `🖥️🧟‍♂️サーバー[${serverName}]の起動コマンドが実行されました👌`,
             );
         } catch (error) {
             await sendToDiscord(
                 discordApplicationId,
                 discordToken,
-                `🖥️サーバー[${serverName}]の起動でエラーが発生しました😢\nしばらくしてからもう一度お試しください🙏`,
+                `🖥️🧟‍♂️サーバー[${serverName}]の起動でエラーが発生しました😢\nしばらくしてからもう一度お試しください🙏`,
             );
             throw error;
         }
