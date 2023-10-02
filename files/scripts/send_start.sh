@@ -20,4 +20,4 @@ while :; do
 	sleep 10
 done
 
-post_discord "🖥️🧟‍♂️**サーバー[${SERVERNAME}]の起動が完了しました**🎉\n\n⬇️IPアドレスとポート番号を入力して参加できます⬇️\nIPアドレス: \`${IPADDRESS}\`\nポート番号: \`26900\`\n\n⬇️Steamの場合はこちらから参加できます。⬇️\nURL: [steam://connect/${IPADDRESS}:26900](steam://connect/${IPADDRESS}:26900)\n\n**⚠️サーバーの接続人数が一定時間0人だった場合、自動的にサーバーを停止します**"
+post_discord "🖥️🧟‍♂️**サーバー[${SERVERNAME}]の起動が完了しました**🎉\n\n⬇️IPアドレスとポート番号を入力して参加できます⬇️\nIPアドレス: \`${IPADDRESS}\`\nポート番号: \`26900\`\n\n⬇️Steamの場合はこちらから参加できます。⬇️\nURL: \`steam://connect/${IPADDRESS}:26900\`\n※URLを選択してWebで開けば自動でサーバーに接続できます\n\n**⚠️サーバーの接続人数が一定時間0人だった場合、自動的にサーバーを停止します**"
