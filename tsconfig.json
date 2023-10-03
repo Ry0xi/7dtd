@@ -24,5 +24,11 @@
       "@/*": ["./*"]
     }
   },
-  "exclude": ["node_modules", "cdk.out", "dist"]
+  "exclude": [
+    "**/node_modules",
+    "**/cdk.out",
+    "dist",
+    "bun.lockb",
+    ".cdk.staging"
+  ]
 }

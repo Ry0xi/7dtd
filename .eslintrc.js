@@ -28,6 +28,7 @@ const config = {
         'dist',
         'cdk.out',
         '.cdk.staging',
+        'bun.lockb',
     ],
     rules: {
         '@typescript-eslint/interface-name-prefix': 'off',
