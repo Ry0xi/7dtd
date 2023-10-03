@@ -151,3 +151,12 @@ post_discord() {
             }
 EOF
 }
+
+# maintenance only
+# S3のファイルを取得する
+update_server_config() {
+    SERVER_FILE_PATH=/mnt/game/ServerFiles
+    cp "$SERVER_FILE_PATH/sdtdserver.xml" "$SERVER_FILE_PATH/sdtdserver_old.xml"
+
+    aws s3 cp "s3://$PREFIX/$SERVERNAME/sdtdserver.xml" "$SERVER_FILE_PATH/sdtdserver.xml"
+}

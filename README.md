@@ -80,6 +80,18 @@ aws ec2 modify-spot-fleet-request --spot-fleet-request-id sfr-xxxxxxxx-xxxx-xxxx
 aws ec2 modify-spot-fleet-request --spot-fleet-request-id sfr-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx --target-capacity 0
 ```
 
+### サーバー設定ファイルの更新
+
+サーバーの設定を変えるにはEC2インスタンス上の`/mnt/game/ServerFiles/sdtdserver.xml`を更新します。
+
+設定ファイルは手動更新せずにS3に保管して、それをサーバーから取得します。（自動化はしていない）
+
+1. プロジェクトルートに、現バージョンのデフォルト設定ファイル(`sdtdserver-default.xml`)があるので、任意の場所にXMLファイルとしてコピー
+1. 1で作成したファイルで設定を変えて保存
+1. `./discord-utils/put-server-config-file-to-s3.sh`を実行してS3に設定ファイルをアップロード（コマンドの引数はスクリプトファイルを参照）
+1. EC2インスタンスにSSHで接続して、`/var/lib/scripts/utils.sh`の`update_server_config`を実行する
+1. ゲームサーバーを再起動（Dockerコンテナを再度立ち上げる）
+
 ## memo
 
 ### 7dtd GameServerの参考
