@@ -1,3 +1,5 @@
+import path = require('path');
+
 import type { StackProps } from 'aws-cdk-lib';
 import * as cdk from 'aws-cdk-lib';
 import {
@@ -191,9 +193,16 @@ export class SdtdBaseStack extends cdk.Stack {
 
         // Lambda
         const commandFunc = new NodejsFunction(this, 'ServerCommand', {
-            entry: '../functions/handlers/server-command-handler/index.ts',
-            depsLockFilePath: '../functions/package-lock.json',
+            entry: path.join(
+                __dirname,
+                '../../functions/handlers/server-command-handler/index.ts',
+            ),
+            depsLockFilePath: path.join(
+                __dirname,
+                '../../functions/package-lock.json',
+            ),
             runtime: lambda.Runtime.NODEJS_18_X,
+            // NOTE: aws-lambda-power-tuningでコスト最適と出た
             memorySize: 128,
             timeout: cdk.Duration.seconds(300),
             environment: {
@@ -202,14 +211,31 @@ export class SdtdBaseStack extends cdk.Stack {
             },
             bundling: {
                 minify: true,
+                tsconfig: path.join(
+                    __dirname,
+                    '../../functions/tsconfig.build.json',
+                ),
+                // https://middy.js.org/docs/best-practices/bundling#bundlers
+                externalModules: [],
             },
         });
 
         const handler = new NodejsFunction(this, 'DiscordBot', {
-            entry: '../functions/handlers/discord-bot-handler/index.ts',
-            depsLockFilePath: '../functions/package-lock.json',
+            entry: path.join(
+                __dirname,
+                '../../functions/handlers/discord-bot-handler/index.ts',
+            ),
+            depsLockFilePath: path.join(
+                __dirname,
+                '../../functions/package-lock.json',
+            ),
             runtime: lambda.Runtime.NODEJS_18_X,
-            memorySize: 128,
+            /**
+             * NOTE: 128MBだとメモリ不足
+             * 256MBだとメモリは足りているが、コールドスタート時にDiscordの初回応答の時間制限に間に合わないので512MB
+             * 256MBがaws-lambda-power-tuningでコスト最適と出た
+             */
+            memorySize: 512,
             timeout: cdk.Duration.seconds(300),
             environment: {
                 PREFIX: props.prefix,
@@ -218,6 +244,12 @@ export class SdtdBaseStack extends cdk.Stack {
             },
             bundling: {
                 minify: true,
+                tsconfig: path.join(
+                    __dirname,
+                    '../../functions/tsconfig.build.json',
+                ),
+                // https://middy.js.org/docs/best-practices/bundling#bundlers
+                externalModules: [],
             },
         });
 
