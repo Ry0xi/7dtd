@@ -202,6 +202,7 @@ export class SdtdBaseStack extends cdk.Stack {
                 '../../functions/package-lock.json',
             ),
             runtime: lambda.Runtime.NODEJS_18_X,
+            // NOTE: aws-lambda-power-tuningでコスト最適と出た
             memorySize: 128,
             timeout: cdk.Duration.seconds(300),
             environment: {
@@ -229,7 +230,9 @@ export class SdtdBaseStack extends cdk.Stack {
                 '../../functions/package-lock.json',
             ),
             runtime: lambda.Runtime.NODEJS_18_X,
-            memorySize: 128,
+            // NOTE: 128だと足りない
+            // aws-lambda-power-tuningでコスト最適と出た
+            memorySize: 256,
             timeout: cdk.Duration.seconds(300),
             environment: {
                 PREFIX: props.prefix,
