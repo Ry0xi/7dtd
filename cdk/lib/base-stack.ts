@@ -6,6 +6,7 @@ import {
     aws_iam as iam,
     aws_ec2 as ec2,
     aws_lambda as lambda,
+    aws_s3 as s3,
 } from 'aws-cdk-lib';
 import { FunctionUrlAuthType } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -68,6 +69,17 @@ export class SdtdBaseStack extends cdk.Stack {
             'ssh access from home',
         );
 
+        // S3
+        const s3Bucket = new s3.Bucket(this, 'ServerConfigFileBucket', {
+            bucketName: props.prefix,
+            versioned: true,
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+            encryption: s3.BucketEncryption.S3_MANAGED,
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            autoDeleteObjects: true,
+        });
+
         // IAM Policy
         const policy = new iam.ManagedPolicy(this, 'EC2Policy', {
             description: '',
@@ -109,6 +121,16 @@ export class SdtdBaseStack extends cdk.Stack {
                         'arn:aws:ec2:*:*:spot-fleet-request/*',
                         'arn:aws:ec2:*:*:subnet/*',
                     ],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['s3:ListBucket'],
+                    resources: [`arn:aws:s3:::${s3Bucket.bucketName}`],
+                }),
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: ['s3:GetObject'],
+                    resources: [`arn:aws:s3:::${s3Bucket.bucketName}/*`],
                 }),
             ],
         });
