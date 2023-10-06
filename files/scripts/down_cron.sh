@@ -49,7 +49,7 @@ while :; do
 done
 
 # メンテナンスモードの時はサーバー停止しない
-[[ $(get_ssm_value maintenance == true) ]] && exit 0
+[[ $(get_ssm_value maintenance) == true ]] && exit 0
 
 post_discord "🖥️🧟‍♂️接続人数が一定時間0人だったため、サーバー[${SERVERNAME}]を停止しました"
 
