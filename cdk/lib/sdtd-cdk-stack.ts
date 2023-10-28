@@ -14,7 +14,10 @@ export interface SdtdProps extends cdk.StackProps {
     discordPublicKey: string;
     discordChannelId: string;
     discordBotToken: string;
+    dockerComposeFileName?: string;
 }
+
+const defaultDockerComposeFileName = 'compose.yaml';
 
 export class SdtdCdkStack extends cdk.Stack {
     constructor(scope: cdk.App, id: string, props: SdtdProps) {
@@ -27,6 +30,13 @@ export class SdtdCdkStack extends cdk.Stack {
             `aws s3 cp s3://${asset.s3BucketName}/${asset.s3ObjectKey} /tmp/files.zip >> /var/tmp/setup`,
             `unzip -d /var/lib/ /tmp/files.zip >>/var/tmp/setup`,
             'chmod -R +x /var/lib',
+            ...(props.dockerComposeFileName !== undefined &&
+            props.dockerComposeFileName !== defaultDockerComposeFileName
+                ? [
+                      `rm -f /var/lib/config/${defaultDockerComposeFileName}`,
+                      `mv /var/lib/config/${props.dockerComposeFileName} /var/lib/config/${defaultDockerComposeFileName}`,
+                  ]
+                : []),
             `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize} ${props.prefix} ${props.snapshotGen}`,
         );
 
