@@ -12,7 +12,7 @@ services:
       - TimeZone=Asia/Tokyo # Optional - Change Timezone
       - TEST_ALERT=NO # Optional - Send a test alert
       - UPDATE_MODS=NO # Optional - This will allow mods to be update on start, each mod also need to have XXXX_UPDATE=YES to update on start
-      - ALLOC_FIXES=YES # Optional - Install ALLOC FIXES
+      - ALLOC_FIXES=NO # Optional - Install ALLOC FIXES
       - ALLOC_FIXES_UPDATE # Optional - Update Allocs Fixes before server start
       - UNDEAD_LEGACY=NO # Optional - Install Undead Legacy mod
       - UNDEAD_LEGACY_VERSION=stable # Optional - Undead Legacy version
