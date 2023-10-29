@@ -34,6 +34,21 @@ const baseStack = new SdtdBaseStack(app, `${prefix}Base`, {
             discordPublicKey: getRequiredEnv('DISCORD_PUBLIC_KEY'),
             discordChannelId: getRequiredEnv('DISCORD_CHANNEL_ID'),
             discordBotToken: getRequiredEnv('DISCORD_BOT_TOKEN'),
+            instanceRequirememtsOverrides: [
+                {
+                    subnetId: baseStack.base.subnets.join(','),
+                    instanceRequirements: {
+                        vCpuCount: {
+                            max: 4,
+                            min: 2,
+                        },
+                        memoryMiB: {
+                            min: 7168,
+                            max: 16384,
+                        },
+                    },
+                },
+            ],
         },
     },
     {
@@ -41,13 +56,29 @@ const baseStack = new SdtdBaseStack(app, `${prefix}Base`, {
         props: {
             env: env,
             prefix: prefix,
-            volumeSize: 20,
+            // Darkness Fallsは追加で8GBくらい必要
+            volumeSize: 30,
             snapshotGen: 3,
             base: baseStack.base,
             discordPublicKey: getRequiredEnv('DISCORD_PUBLIC_KEY'),
             discordChannelId: getRequiredEnv('DISCORD_CHANNEL_ID'),
             discordBotToken: getRequiredEnv('DISCORD_BOT_TOKEN'),
             dockerComposeFileName: 'docker-compose-SdtdPVE02_MOD.yaml',
+            instanceRequirememtsOverrides: [
+                {
+                    subnetId: baseStack.base.subnets.join(','),
+                    instanceRequirements: {
+                        vCpuCount: {
+                            max: 4,
+                            min: 2,
+                        },
+                        memoryMiB: {
+                            min: 16384,
+                            max: 16384,
+                        },
+                    },
+                },
+            ],
         },
     },
 ].map((config) => {

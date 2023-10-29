@@ -15,6 +15,7 @@ export interface SdtdProps extends cdk.StackProps {
     discordChannelId: string;
     discordBotToken: string;
     dockerComposeFileName?: string;
+    instanceRequirememtsOverrides: ec2.CfnSpotFleet.LaunchTemplateConfigProperty['overrides'];
 }
 
 const defaultDockerComposeFileName = 'compose.yaml';
@@ -70,21 +71,7 @@ export class SdtdCdkStack extends cdk.Stack {
                             launchTemplateId: template.launchTemplateId || '',
                             version: template.latestVersionNumber,
                         },
-                        overrides: [
-                            {
-                                subnetId: props.base.subnets.join(','),
-                                instanceRequirements: {
-                                    vCpuCount: {
-                                        max: 4,
-                                        min: 2,
-                                    },
-                                    memoryMiB: {
-                                        min: 7168,
-                                        max: 16384,
-                                    },
-                                },
-                            },
-                        ],
+                        overrides: props.instanceRequirememtsOverrides,
                     },
                 ],
             },
