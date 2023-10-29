@@ -12,6 +12,10 @@
         {
           "name": "7 Days to Die [SdtdPVE01]",
           "value": "SdtdPVE01"
+        },
+        {
+          "name": "7 Days to Die Mod Server[SdtdPVE02-MOD]",
+          "value": "SdtdPVE02-MOD"
         }
       ]
     }
