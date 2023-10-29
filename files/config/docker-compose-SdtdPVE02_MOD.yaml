@@ -1,5 +1,5 @@
 # MODを入れたサーバー(SdtdPVE02_MOD)
-# Darkness Falls
+# Darkness Falls は手動でインストールする
 services:
   7dtdserver:
     image: vinanrra/7dtd-server
@@ -17,8 +17,8 @@ services:
       - UNDEAD_LEGACY=NO # Optional - Install Undead Legacy mod
       - UNDEAD_LEGACY_VERSION=stable # Optional - Undead Legacy version
       - UNDEAD_LEGACY_UPDATE=NO # Optional - Update Undead Legacy mod before server start
-      - DARKNESS_FALLS=YES
-      - DARKNESS_FALLS_UPDATE=YES
+      - DARKNESS_FALLS=NO
+      - DARKNESS_FALLS_UPDATE=NO
       - DARKNESS_FALLS_URL=False
       - ENZOMBIES=NO # Optional - Install EnZombies mod
       - ENZOMBIES_ADDON_SNUFKIN=NO # Optional - Install EnZombies addon mod
