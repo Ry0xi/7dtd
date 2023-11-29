@@ -14,7 +14,11 @@ export interface SdtdProps extends cdk.StackProps {
     discordPublicKey: string;
     discordChannelId: string;
     discordBotToken: string;
+    dockerComposeFileName?: string;
+    instanceRequirememtsOverrides: ec2.CfnSpotFleet.LaunchTemplateConfigProperty['overrides'];
 }
+
+const defaultDockerComposeFileName = 'compose.yaml';
 
 export class SdtdCdkStack extends cdk.Stack {
     constructor(scope: cdk.App, id: string, props: SdtdProps) {
@@ -27,6 +31,13 @@ export class SdtdCdkStack extends cdk.Stack {
             `aws s3 cp s3://${asset.s3BucketName}/${asset.s3ObjectKey} /tmp/files.zip >> /var/tmp/setup`,
             `unzip -d /var/lib/ /tmp/files.zip >>/var/tmp/setup`,
             'chmod -R +x /var/lib',
+            ...(props.dockerComposeFileName !== undefined &&
+            props.dockerComposeFileName !== defaultDockerComposeFileName
+                ? [
+                      `rm -f /var/lib/config/${defaultDockerComposeFileName}`,
+                      `mv /var/lib/config/${props.dockerComposeFileName} /var/lib/config/${defaultDockerComposeFileName}`,
+                  ]
+                : []),
             `bash /var/lib/scripts/user-data.sh ${this.stackName} ${props.volumeSize} ${props.prefix} ${props.snapshotGen}`,
         );
 
@@ -60,21 +71,7 @@ export class SdtdCdkStack extends cdk.Stack {
                             launchTemplateId: template.launchTemplateId || '',
                             version: template.latestVersionNumber,
                         },
-                        overrides: [
-                            {
-                                subnetId: props.base.subnets.join(','),
-                                instanceRequirements: {
-                                    vCpuCount: {
-                                        max: 4,
-                                        min: 2,
-                                    },
-                                    memoryMiB: {
-                                        min: 7168,
-                                        max: 16384,
-                                    },
-                                },
-                            },
-                        ],
+                        overrides: props.instanceRequirememtsOverrides,
                     },
                 ],
             },

@@ -4,7 +4,7 @@ import type { APIGatewayProxyResult } from 'aws-lambda';
 import { verifyKey } from 'discord-interactions';
 
 import type { EventType } from '@/functions/common/interaction-event-schema';
-import { getEnv, getParameter } from '@/functions/common/utils';
+import { getEnv, getParameter, getServerName } from '@/functions/common/utils';
 
 const discordAuthorizationMiddleware = (): middy.MiddlewareObj<
     EventType & {
@@ -25,11 +25,16 @@ const discordAuthorizationMiddleware = (): middy.MiddlewareObj<
         },
         APIGatewayProxyResult
     > = async (request): Promise<APIGatewayProxyResult | void> => {
+        const data = request.event.body.data;
+        if (data === undefined)
+            throw createError(400, '"data" is required to start server.');
+        const serverName = getServerName(data);
+
         const headers = request.event.headers;
         const signature = headers['x-signature-ed25519'];
         const timestamp = headers['x-signature-timestamp'];
         const publicKey = await getParameter(
-            `/${getEnv('PREFIX')}/${getEnv('SERVER_NAME')}/discordPublicKey`,
+            `/${getEnv('PREFIX')}/${serverName}/discordPublicKey`,
         );
 
         if (

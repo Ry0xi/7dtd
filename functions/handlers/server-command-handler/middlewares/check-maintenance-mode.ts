@@ -21,16 +21,16 @@ const checkMaintenanceModeMiddleware = (): middy.MiddlewareObj<
         EventType,
         APIGatewayProxyResult
     > = async (request): Promise<APIGatewayProxyResult | void> => {
+        const data = request.event.body.data;
+        if (data === undefined)
+            throw createError(400, '"data" is required to start server.');
+        const serverName = getServerName(data);
+
         const maintenance = await getParameter(
-            `/${getEnv('PREFIX')}/${getEnv('SERVER_NAME')}/maintenance`,
+            `/${getEnv('PREFIX')}/${serverName}/maintenance`,
         );
 
         if (maintenance === 'true') {
-            const data = request.event.body.data;
-            if (data === undefined)
-                throw createError(400, '"data" is required to start server.');
-
-            const serverName = getServerName(data);
             const discordApplicationId = request.event.body.application_id;
             const discordToken = request.event.body.token;
 

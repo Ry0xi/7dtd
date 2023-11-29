@@ -15,7 +15,6 @@ import type { Construct } from 'constructs';
 export interface SdtdBaseProps extends StackProps {
     prefix: string;
     myIP: string;
-    serverName: string;
     sshPublicKey: string;
 }
 
@@ -229,7 +228,6 @@ export class SdtdBaseStack extends cdk.Stack {
             timeout: cdk.Duration.seconds(300),
             environment: {
                 PREFIX: props.prefix,
-                SERVER_NAME: props.serverName,
             },
             bundling: {
                 minify: true,
@@ -262,7 +260,6 @@ export class SdtdBaseStack extends cdk.Stack {
             environment: {
                 PREFIX: props.prefix,
                 CMDFUNC: commandFunc.functionArn,
-                SERVER_NAME: props.serverName,
             },
             bundling: {
                 minify: true,
